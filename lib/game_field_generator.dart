@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:search_word/model/field_cell.dart';
 import 'package:search_word/model/game_field.dart';
 
+import 'direction_helper.dart';
+
 class GameFieldGenerator {
   final List<String> words;
   final List<String> addedWords = [];
@@ -130,5 +132,3 @@ class GameFieldGenerator {
     }
   }
 }
-
-enum Direction { Up, Down, Left, Right, UpLeft, UpRight, DownLeft, DownRight }

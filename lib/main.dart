@@ -27,7 +27,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<String> words = [];
+  List<String> words = [
+    'FLUTTER',
+    'ANDROID',
+    'DEVELOP',
+    'GOOGLE',
+    'KOTLIN',
+    'SWIFT',
+    'APPLE',
+    'ALPHA',
+    'ALEX',
+    'VOVA',
+    'IOS',
+  ];
   int size = 7;
 
   @override
@@ -67,50 +79,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 field: generator.gameField.field,
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: TextField(
-                onChanged: (text) {
-                  words = text.toUpperCase().split(' ');
-                  if (words.last == '') {
-                    words.removeLast();
-                  }
-                  update();
-                },
-                decoration: new InputDecoration(
-                    border: new OutlineInputBorder(
-                      borderRadius: const BorderRadius.all(
-                        const Radius.circular(10.0),
-                      ),
-                    ),
-                    filled: true,
-                    hintStyle: new TextStyle(color: Colors.grey[800]),
-                    hintText:
-                        "Enter space separated words (example: vova alex)",
-                    fillColor: Colors.white70),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: TextField(
-                onChanged: (text) {
-                  try {
-                    size = int.parse(text);
-                    update();
-                  } catch (e) {}
-                },
-                decoration: new InputDecoration(
-                    border: new OutlineInputBorder(
-                      borderRadius: const BorderRadius.all(
-                        const Radius.circular(10.0),
-                      ),
-                    ),
-                    filled: true,
-                    hintStyle: new TextStyle(color: Colors.grey[800]),
-                    hintText: "Size",
-                    fillColor: Colors.white70),
-              ),
-            )
           ],
         ));
   }
