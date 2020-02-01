@@ -84,6 +84,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   update() {
-    setState(() {});
+    if (mounted) setState(() {});
   }
 }
