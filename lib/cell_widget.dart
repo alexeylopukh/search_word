@@ -60,10 +60,6 @@ class CellWidgetState extends State<CellWidget>
     update();
   }
 
-  update() {
-    setState(() {});
-  }
-
   bool isXpositionHere(double x) {
     print('x = ' + x.toString());
     print('start= ${startPosition.dx}, end: ${endPosition.dx}');
@@ -85,5 +81,9 @@ class CellWidgetState extends State<CellWidget>
   @override
   void afterFirstLayout(BuildContext context) {
     getWidgetPosition();
+  }
+
+  update() {
+    if (mounted) setState(() {});
   }
 }

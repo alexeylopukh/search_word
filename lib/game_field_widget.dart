@@ -374,7 +374,11 @@ class GameFieldWidgetState extends State<GameFieldWidget>
     if (fieldOffset == null) {
       fieldOffset =
           (context.findRenderObject() as RenderBox).localToGlobal(Offset.zero);
-      setState(() {});
+      update();
     }
+  }
+
+  update() {
+    if (mounted) setState(() {});
   }
 }
