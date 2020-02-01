@@ -18,6 +18,8 @@ class GameFieldWidget extends StatefulWidget {
 class GameFieldWidgetState extends State<GameFieldWidget>
     with AfterLayoutMixin<GameFieldWidget> {
   List<List<String>> get field => widget.field;
+  List<List<GlobalKey<CellWidgetState>>> keysField = [];
+
   List<GlobalKey<CellWidgetState>> keys = [];
   List<GlobalKey<CellWidgetState>> selectedCells = [];
 
@@ -75,19 +77,25 @@ class GameFieldWidgetState extends State<GameFieldWidget>
   }
 
   Widget generateField(double width) {
+    keysField.clear();
     final List<Widget> rows = [];
     for (int i = 0; i < field.length; i++) {
+      final List<GlobalKey<CellWidgetState>> currentRowKeys = [];
       final List<Widget> currentRowWidgets = [];
       for (int j = 0; j < field[i].length; j++) {
         final key = GlobalKey<CellWidgetState>();
+        currentRowKeys.add(key);
         keys.add(key);
         currentRowWidgets.add(CellWidget(
+          y: i,
+          x: j,
           size: width,
           text: field[i][j],
           key: key,
           offset: fieldOffset,
         ));
       }
+      keysField.add(currentRowKeys);
       rows.add(Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: currentRowWidgets,
@@ -108,15 +116,17 @@ class GameFieldWidgetState extends State<GameFieldWidget>
 //    selectedCells.add(key);
   }
 
-  onTapUpdate(GlobalKey<CellWidgetState> key, Offset touchedCoordinates) {
+  onTapUpdate(
+      GlobalKey<CellWidgetState> touchedKey, Offset touchedCoordinates) {
     bool needRepait = true;
     if (firstCell == null || firstCell.currentState == null) {
-      firstCell = key;
+      firstCell = touchedKey;
       needRepait = false;
     }
 
     final Direction direction = DirectionHelper().getDirectionFromOffsets(
-        firstCell.currentState.getCenter(), key.currentState.getCenter());
+        firstCell.currentState.getCenter(),
+        touchedKey.currentState.getCenter());
 
     if (!needRepait) return;
     if (currentDirection != null &&
@@ -128,7 +138,7 @@ class GameFieldWidgetState extends State<GameFieldWidget>
       else
         secondCell = corrCell;
     } else {
-      secondCell = key;
+      secondCell = touchedKey;
       currentDirection = direction;
     }
 
@@ -146,28 +156,194 @@ class GameFieldWidgetState extends State<GameFieldWidget>
         if (corrCell != null) return corrCell;
         break;
       case Direction.Down:
-        // TODO: Handle this case.
+        final corrCell = getKeyOfCurrentPosition(
+            Offset(firstCoordinates.dx, touchedCoordinates.dy));
+        if (corrCell != null) return corrCell;
         break;
       case Direction.Left:
-        // TODO: Handle this case.
+        final corrCell = getKeyOfCurrentPosition(
+            Offset(touchedCoordinates.dx, firstCoordinates.dy));
+        if (corrCell != null) return corrCell;
         break;
       case Direction.Right:
-        // TODO: Handle this case.
+        final corrCell = getKeyOfCurrentPosition(
+            Offset(touchedCoordinates.dx, firstCoordinates.dy));
+        if (corrCell != null) return corrCell;
         break;
       case Direction.UpLeft:
-        // TODO: Handle this case.
+        final list = getCellsFromDirection(firstCell, currentDirection);
+        final different = Offset(
+            (firstCell.currentState.getCenter().dx - touchedCoordinates.dx)
+                .abs(),
+            (firstCell.currentState.getCenter().dy - touchedCoordinates.dy)
+                .abs());
+        final rightCell = getRightCell(
+            options: list, different: different, touched: touchedCoordinates);
+        return rightCell;
         break;
       case Direction.UpRight:
-        // TODO: Handle this case.
+        final list = getCellsFromDirection(firstCell, currentDirection);
+        final different = Offset(
+            (firstCell.currentState.getCenter().dx - touchedCoordinates.dx)
+                .abs(),
+            (firstCell.currentState.getCenter().dy - touchedCoordinates.dy)
+                .abs());
+        final rightCell = getRightCell(
+            options: list, different: different, touched: touchedCoordinates);
+        return rightCell;
         break;
       case Direction.DownLeft:
-        // TODO: Handle this case.
+        final list = getCellsFromDirection(firstCell, currentDirection);
+        final different = Offset(
+            (firstCell.currentState.getCenter().dx - touchedCoordinates.dx)
+                .abs(),
+            (firstCell.currentState.getCenter().dy - touchedCoordinates.dy)
+                .abs());
+        final rightCell = getRightCell(
+            options: list, different: different, touched: touchedCoordinates);
+        return rightCell;
         break;
       case Direction.DownRight:
-        // TODO: Handle this case.
+        final list = getCellsFromDirection(firstCell, currentDirection);
+        final different = Offset(
+            (firstCell.currentState.getCenter().dx - touchedCoordinates.dx)
+                .abs(),
+            (firstCell.currentState.getCenter().dy - touchedCoordinates.dy)
+                .abs());
+        final rightCell = getRightCell(
+            options: list, different: different, touched: touchedCoordinates);
+        return rightCell;
         break;
     }
     return null;
+  }
+
+  GlobalKey<CellWidgetState> getRightCell(
+      {List<GlobalKey<CellWidgetState>> options,
+      Offset different,
+      Offset touched}) {
+    final iterator = options.iterator;
+    print("different: " + different.toString());
+    if (different.dx > different.dy) {
+      while (iterator.moveNext()) {
+        final current = iterator.current;
+        if (current.currentState.isXpositionHere(touched.dx)) {
+          return current;
+        }
+      }
+    } else {
+      while (iterator.moveNext()) {
+        final current = iterator.current;
+        if (current.currentState.isYpositionHere(touched.dy)) {
+          return current;
+        }
+      }
+    }
+    return null;
+  }
+
+  List<GlobalKey<CellWidgetState>> getCellsFromDirection(
+      GlobalKey<CellWidgetState> firstCell, Direction direction) {
+    int x = firstCell.currentState.x;
+    int y = firstCell.currentState.y;
+    bool canGo = true;
+    final List<GlobalKey<CellWidgetState>> result = [];
+    result.add(keysField[y][x]);
+    switch (currentDirection) {
+      case Direction.Up:
+        while (canGo) {
+          try {
+            y--;
+            final cell = keysField[y][x];
+            result.add(cell);
+          } catch (e) {
+            canGo = false;
+          }
+        }
+        break;
+      case Direction.Down:
+        while (canGo) {
+          try {
+            y++;
+            final cell = keysField[y][x];
+            result.add(cell);
+          } catch (e) {
+            canGo = false;
+          }
+        }
+        break;
+      case Direction.Left:
+        while (canGo) {
+          try {
+            x--;
+            final cell = keysField[y][x];
+            result.add(cell);
+          } catch (e) {
+            canGo = false;
+          }
+        }
+        break;
+      case Direction.Right:
+        while (canGo) {
+          try {
+            x++;
+            final cell = keysField[y][x];
+            result.add(cell);
+          } catch (e) {
+            canGo = false;
+          }
+        }
+        break;
+      case Direction.UpLeft:
+        while (canGo) {
+          try {
+            y--;
+            x--;
+            final cell = keysField[y][x];
+            result.add(cell);
+          } catch (e) {
+            canGo = false;
+          }
+        }
+        break;
+      case Direction.UpRight:
+        while (canGo) {
+          try {
+            y--;
+            x++;
+            final cell = keysField[y][x];
+            result.add(cell);
+          } catch (e) {
+            canGo = false;
+          }
+        }
+        break;
+      case Direction.DownLeft:
+        while (canGo) {
+          try {
+            y++;
+            x--;
+            final cell = keysField[y][x];
+            result.add(cell);
+          } catch (e) {
+            canGo = false;
+          }
+        }
+        break;
+      case Direction.DownRight:
+        while (canGo) {
+          try {
+            y++;
+            x++;
+            final cell = keysField[y][x];
+            result.add(cell);
+          } catch (e) {
+            canGo = false;
+          }
+        }
+        break;
+    }
+    return result;
   }
 
   onTapEnd() {

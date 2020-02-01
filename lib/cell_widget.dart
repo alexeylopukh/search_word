@@ -5,8 +5,10 @@ class CellWidget extends StatefulWidget {
   final double size;
   final String text;
   final Offset offset;
+  final int x;
+  final int y;
 
-  const CellWidget({Key key, this.size, this.text, this.offset})
+  const CellWidget({Key key, this.size, this.text, this.offset, this.x, this.y})
       : super(key: key);
 
   @override
@@ -18,6 +20,9 @@ class CellWidget extends StatefulWidget {
 class CellWidgetState extends State<CellWidget>
     with AfterLayoutMixin<CellWidget> {
   CellWidgetState(this.offset);
+
+  int get x => widget.x;
+  int get y => widget.y;
 
   double get size => widget.size;
   String get text => widget.text;
@@ -57,6 +62,18 @@ class CellWidgetState extends State<CellWidget>
 
   update() {
     setState(() {});
+  }
+
+  bool isXpositionHere(double x) {
+    print('x = ' + x.toString());
+    print('start= ${startPosition.dx}, end: ${endPosition.dx}');
+    return startPosition.dx <= x && endPosition.dx >= x;
+  }
+
+  bool isYpositionHere(double y) {
+    print('y = ' + y.toString());
+    print('start= ${startPosition.dx}, end: ${endPosition.dy}');
+    return startPosition.dy <= y && endPosition.dy >= y;
   }
 
   Offset getCenter() {
