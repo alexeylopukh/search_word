@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
-
+import 'package:flutter/material.dart';
+import 'package:search_word/widget/cell_widget.dart';
 import 'field_cell.dart';
 
 class WordModel {
@@ -7,6 +7,9 @@ class WordModel {
 
   final FieldCell startCell;
   final FieldCell endCell;
+
+  GlobalKey<CellWidgetState> startCellKey;
+  GlobalKey<CellWidgetState> endCellKey;
 
   WordModel({
     @required this.word,

@@ -30,7 +30,7 @@ class SelectedDrawerWidgetState extends State<SelectedDrawerWidget> {
           : CustomPaint(
               size: Size(widget.size, widget.size),
               painter: LinePainter(first, second == null ? first : second,
-                  widget.width, Colors.orange),
+                  widget.width, Colors.orange.withOpacity(0.5)),
             ),
     );
   }

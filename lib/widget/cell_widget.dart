@@ -29,7 +29,6 @@ class CellWidgetState extends State<CellWidget>
   Offset offset;
   Offset startPosition;
   Offset endPosition;
-  bool isTouched = false;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +36,6 @@ class CellWidgetState extends State<CellWidget>
     return Container(
       height: size,
       width: size,
-      color: isTouched ? Colors.orange : Colors.transparent,
       child: Center(
         child: Text(
           text,
@@ -53,11 +51,6 @@ class CellWidgetState extends State<CellWidget>
     startPosition = Offset(position.dx - offset.dx, position.dy - offset.dy);
     endPosition =
         Offset(position.dx - offset.dx + size, position.dy - offset.dy + size);
-  }
-
-  unSelect() {
-    isTouched = false;
-    update();
   }
 
   bool isXpositionHere(double x) {

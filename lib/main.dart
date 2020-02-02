@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:search_word/widget/words_widget.dart';
 
@@ -42,45 +43,37 @@ class _MyHomePageState extends State<MyHomePage> {
   ];
   int size = 7;
 
+  GameFieldGeneratorInteractor generator;
+
   @override
   void initState() {
+    generator = GameFieldGeneratorInteractor(words: words, size: size);
+    generator.generateField();
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final generator = GameFieldGeneratorInteractor(words: words, size: size);
-    generator.generateField();
-
     return Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              IconButton(
-                onPressed: () => update(),
-                icon: Icon(Icons.refresh),
-              )
-            ],
+        body: SafeArea(
+      child: Column(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 37, vertical: 22),
+            child: WordsWidget(
+              words: generator.addedWords,
+            ),
           ),
-        ),
-        body: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 37, vertical: 22),
-              child: WordsWidget(
-                words: generator.addedWords,
-              ),
+          Padding(
+            padding: EdgeInsets.all(18),
+            child: GameFieldWidget(
+              generator: generator,
             ),
-            Padding(
-              padding: EdgeInsets.all(18),
-              child: GameFieldWidget(
-                field: generator.gameField.field,
-              ),
-            ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    ));
   }
 
   update() {

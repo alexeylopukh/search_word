@@ -1,14 +1,17 @@
 import 'package:after_layout/after_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:search_word/helper/direction_helper.dart';
+import 'package:search_word/interactor/game_field_generator_interactor.dart';
+import 'package:search_word/model/word_model.dart';
+import 'package:search_word/widget/found_words_widget.dart';
 import 'package:search_word/widget/selected_drawer_widget.dart';
 import 'package:vibration/vibration.dart';
 import 'cell_widget.dart';
 
 class GameFieldWidget extends StatefulWidget {
-  final List<List<String>> field;
+  final GameFieldGeneratorInteractor generator;
 
-  const GameFieldWidget({Key key, @required this.field}) : super(key: key);
+  const GameFieldWidget({Key key, @required this.generator}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
     return GameFieldWidgetState();
@@ -17,7 +20,8 @@ class GameFieldWidget extends StatefulWidget {
 
 class GameFieldWidgetState extends State<GameFieldWidget>
     with AfterLayoutMixin<GameFieldWidget> {
-  List<List<String>> get field => widget.field;
+  List<WordModel> get availableWorlds => widget.generator.addedWords;
+  List<List<String>> get field => widget.generator.gameField.field;
   List<List<GlobalKey<CellWidgetState>>> keysField = [];
 
   List<GlobalKey<CellWidgetState>> keys = [];
@@ -26,14 +30,17 @@ class GameFieldWidgetState extends State<GameFieldWidget>
   GlobalKey<CellWidgetState> firstCell;
   GlobalKey<CellWidgetState> secondCell;
 
+  List<WordModel> foundedWords = [];
+
   Offset fieldOffset;
+
+  Widget gameField;
 
   GlobalKey<SelectedDrawerWidgetState> selectedController =
       GlobalKey<SelectedDrawerWidgetState>();
 
   @override
   Widget build(BuildContext context) {
-    keys = [];
     return GestureDetector(
       onPanDown: (DragDownDetails details) {
         final touched = getKeyOfCurrentPosition(details.localPosition);
@@ -59,13 +66,23 @@ class GameFieldWidgetState extends State<GameFieldWidget>
               SizedBox(
                 height: constraints.maxWidth,
                 width: constraints.maxWidth,
+                child: FoundWordsWidget(
+                  findedWords: foundedWords,
+                  width: constraints.maxWidth / field.length - 1,
+                ),
+              ),
+              SizedBox(
+                height: constraints.maxWidth,
+                width: constraints.maxWidth,
                 child: SelectedDrawerWidget(
                   constraints.maxWidth,
                   constraints.maxWidth / field.length,
                   key: selectedController,
                 ),
               ),
-              generateField(constraints.maxWidth / field.length),
+              gameField == null
+                  ? generateField(constraints.maxWidth / field.length)
+                  : gameField,
             ],
           );
         },
@@ -98,10 +115,11 @@ class GameFieldWidgetState extends State<GameFieldWidget>
         children: currentRowWidgets,
       ));
     }
-    return Column(
+    gameField = Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: rows,
     );
+    return gameField;
   }
 
   onFirstTap(GlobalKey<CellWidgetState> key) {
@@ -339,7 +357,22 @@ class GameFieldWidgetState extends State<GameFieldWidget>
   }
 
   onTapEnd() {
-    print('end');
+    try {
+      availableWorlds.forEach((w) {
+        if (firstCell.currentState != null &&
+            secondCell.currentState != null &&
+            w.startCell.x == firstCell.currentState.x &&
+            w.startCell.y == firstCell.currentState.y &&
+            w.endCell.x == secondCell.currentState.x &&
+            w.endCell.y == secondCell.currentState.y) {
+          w.startCellKey = firstCell;
+          w.endCellKey = secondCell;
+          foundedWords.add(w);
+          update();
+        }
+      });
+    } catch (e) {}
+
     firstCell = null;
     secondCell = null;
     currentDirection = null;
@@ -367,6 +400,7 @@ class GameFieldWidgetState extends State<GameFieldWidget>
     if (fieldOffset == null) {
       fieldOffset =
           (context.findRenderObject() as RenderBox).localToGlobal(Offset.zero);
+      gameField = null;
       update();
     }
   }

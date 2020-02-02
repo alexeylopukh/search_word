@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:search_word/interactor/string_from_list.dart';
@@ -11,6 +12,7 @@ class GameFieldGeneratorInteractor {
   final List<String> words;
   final List<WordModel> addedWords = [];
   final int size;
+  final String abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
   GameFieldGeneratorInteractor({@required this.words, this.size = 7}) {
     gameField = GameField(size: size);
@@ -34,6 +36,7 @@ class GameFieldGeneratorInteractor {
         return;
       }
     });
+    fillEmptyCells();
     return successfully;
   }
 
@@ -96,6 +99,14 @@ class GameFieldGeneratorInteractor {
     ];
     result.shuffle();
     return result;
+  }
+
+  fillEmptyCells() {
+    List<String> abcList = abc.split('');
+    gameField.getAvailableStartPoints('').forEach((cell) {
+      gameField.field[cell.y][cell.x] =
+          abcList[Random().nextInt(abcList.length)];
+    });
   }
 
   moveToDirection(Direction direction) {
