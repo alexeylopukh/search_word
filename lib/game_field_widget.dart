@@ -118,13 +118,10 @@ class GameFieldWidgetState extends State<GameFieldWidget>
 
   onTapUpdate(
       GlobalKey<CellWidgetState> touchedKey, Offset touchedCoordinates) {
-    bool needRepaint = true;
     if (firstCell == null || firstCell.currentState == null) {
       firstCell = touchedKey;
-      needRepaint = false;
+      return;
     }
-
-    if (!needRepaint) return;
 
     final Direction newDirection = DirectionHelper().getDirectionFromOffsets(
         firstCell.currentState.getCenter(),
@@ -132,22 +129,10 @@ class GameFieldWidgetState extends State<GameFieldWidget>
 
     currentDirection = newDirection;
 
-    final secondCell = correctDirection(touchedCoordinates);
-
-//    if (currentDirection != null &&
-//        newDirection != null &&
-//        currentDirection != newDirection) {
-//      final corrCell = correctDirection(touchedCoordinates);
-//      if (corrCell == secondCell)
-//        return;
-//      else
-//        secondCell = corrCell;
-//    } else {
-//      secondCell = touchedKey;
-//      currentDirection = newDirection;
-//    }
+    secondCell = correctDirection(touchedCoordinates);
 
     Vibration.vibrate(duration: 15);
+
     selectedController.currentState.setCells(firstCell.currentState.getCenter(),
         secondCell.currentState.getCenter());
   }
@@ -193,6 +178,7 @@ class GameFieldWidgetState extends State<GameFieldWidget>
                 .abs(),
             (firstCell.currentState.getCenter().dy - touchedCoordinates.dy)
                 .abs());
+
         final rightCell = getRightCell(
             options: list, different: different, touched: touchedCoordinates);
         return rightCell;
