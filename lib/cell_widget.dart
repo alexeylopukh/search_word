@@ -61,14 +61,10 @@ class CellWidgetState extends State<CellWidget>
   }
 
   bool isXpositionHere(double x) {
-    print('x = ' + x.toString());
-    print('start= ${startPosition.dx}, end: ${endPosition.dx}');
     return startPosition.dx <= x && endPosition.dx >= x;
   }
 
   bool isYpositionHere(double y) {
-    print('y = ' + y.toString());
-    print('start= ${startPosition.dx}, end: ${endPosition.dy}');
     return startPosition.dy <= y && endPosition.dy >= y;
   }
 

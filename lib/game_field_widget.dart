@@ -43,8 +43,6 @@ class GameFieldWidgetState extends State<GameFieldWidget>
         else {
           print('NOT FOUND');
         }
-//        print(
-//            'start: X: ${details.localPosition.dx} Y:${details.localPosition.dy}');
       },
       onPanUpdate: (DragUpdateDetails details) {
         final touched = getKeyOfCurrentPosition(details.localPosition);
@@ -112,13 +110,11 @@ class GameFieldWidgetState extends State<GameFieldWidget>
     firstCell = key;
     selectedController.currentState.setCells(
         firstCell.currentState.getCenter(), firstCell.currentState.getCenter());
-//    print('first');
-//    selectedCells.add(key);
   }
 
   onTapUpdate(
       GlobalKey<CellWidgetState> touchedKey, Offset touchedCoordinates) {
-    if (firstCell == null || firstCell.currentState == null) {
+    if (!(firstCell != null && firstCell.currentState != null)) {
       firstCell = touchedKey;
       return;
     }
@@ -129,7 +125,14 @@ class GameFieldWidgetState extends State<GameFieldWidget>
 
     currentDirection = newDirection;
 
-    secondCell = correctDirection(touchedCoordinates);
+    final newSecondCell = correctDirection(touchedCoordinates);
+
+    if (newSecondCell == secondCell) return;
+
+    if (newSecondCell == null)
+      secondCell = firstCell;
+    else
+      secondCell = newSecondCell;
 
     Vibration.vibrate(duration: 15);
 
