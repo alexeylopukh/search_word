@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:search_word/game_field_widget.dart';
-import 'package:search_word/words_widget.dart';
+import 'package:search_word/widget/words_widget.dart';
 
-import 'game_field_generator.dart';
+import 'interactor/game_field_generator_interactor.dart';
+import 'widget/game_field_widget.dart';
 
 void main() => runApp(MyApp());
 
@@ -49,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final generator = GameFieldGenerator(words: words, size: size);
+    final generator = GameFieldGeneratorInteractor(words: words, size: size);
     generator.generateField();
 
     return Scaffold(

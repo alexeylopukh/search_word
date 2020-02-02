@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui;
-import 'package:vibration/vibration.dart';
+
+import 'line_painter.dart';
 
 class SelectedDrawerWidget extends StatefulWidget {
   final double size;
@@ -29,8 +29,8 @@ class SelectedDrawerWidgetState extends State<SelectedDrawerWidget> {
           ? Container()
           : CustomPaint(
               size: Size(widget.size, widget.size),
-              painter: LinePainter(
-                  first, second == null ? first : second, widget.width),
+              painter: LinePainter(first, second == null ? first : second,
+                  widget.width, Colors.orange),
             ),
     );
   }
@@ -42,29 +42,5 @@ class SelectedDrawerWidgetState extends State<SelectedDrawerWidget> {
     this.first = firstCell;
     this.second = secondCell;
     setState(() {});
-  }
-}
-
-class LinePainter extends CustomPainter {
-  final Offset firstPoint;
-  final Offset secondPoint;
-  final double width;
-
-  LinePainter(this.firstPoint, this.secondPoint, this.width);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final pointMode = ui.PointMode.polygon;
-    final points = [firstPoint, secondPoint];
-    final paint = Paint()
-      ..color = Colors.orange
-      ..strokeWidth = width
-      ..strokeCap = StrokeCap.round;
-    canvas.drawPoints(pointMode, points, paint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter old) {
-    return true;
   }
 }

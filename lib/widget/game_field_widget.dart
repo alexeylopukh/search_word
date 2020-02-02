@@ -1,7 +1,7 @@
 import 'package:after_layout/after_layout.dart';
 import 'package:flutter/material.dart';
-import 'package:search_word/direction_helper.dart';
-import 'package:search_word/selected_drawer_widget.dart';
+import 'package:search_word/helper/direction_helper.dart';
+import 'package:search_word/widget/selected_drawer_widget.dart';
 import 'package:vibration/vibration.dart';
 import 'cell_widget.dart';
 
@@ -21,7 +21,6 @@ class GameFieldWidgetState extends State<GameFieldWidget>
   List<List<GlobalKey<CellWidgetState>>> keysField = [];
 
   List<GlobalKey<CellWidgetState>> keys = [];
-  List<GlobalKey<CellWidgetState>> selectedCells = [];
 
   Direction currentDirection;
   GlobalKey<CellWidgetState> firstCell;
@@ -217,7 +216,6 @@ class GameFieldWidgetState extends State<GameFieldWidget>
       Offset different,
       Offset touched}) {
     final iterator = options.iterator;
-    print("different: " + different.toString());
     if (different.dx > different.dy) {
       while (iterator.moveNext()) {
         final current = iterator.current;
@@ -341,6 +339,7 @@ class GameFieldWidgetState extends State<GameFieldWidget>
   }
 
   onTapEnd() {
+    print('end');
     firstCell = null;
     secondCell = null;
     currentDirection = null;

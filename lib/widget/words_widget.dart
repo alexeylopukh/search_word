@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
+import 'package:search_word/model/word_model.dart';
 
 class WordsWidget extends StatefulWidget {
-  final List<String> words;
+  final List<WordModel> words;
 
   WordsWidget({@required this.words});
 
@@ -12,14 +13,14 @@ class WordsWidget extends StatefulWidget {
 }
 
 class WordsWidgetState extends State<WordsWidget> {
-  List<String> get words => widget.words;
+  List<WordModel> get words => widget.words;
 
   @override
   Widget build(BuildContext context) {
     List<Widget> widgets = [];
     words.forEach((word) {
       widgets.add(Text(
-        " $word ",
+        " ${word.word} ",
         style: TextStyle(fontSize: 24, fontWeight: FontWeight.w300),
       ));
     });

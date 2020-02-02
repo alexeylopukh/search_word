@@ -1,17 +1,18 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:search_word/interactor/string_from_list.dart';
 import 'package:search_word/model/field_cell.dart';
 import 'package:search_word/model/game_field.dart';
+import 'package:search_word/model/word_model.dart';
+import '../helper/direction_helper.dart';
 
-import 'direction_helper.dart';
-
-class GameFieldGenerator {
+class GameFieldGeneratorInteractor {
   final List<String> words;
-  final List<String> addedWords = [];
+  final List<WordModel> addedWords = [];
   final int size;
 
-  GameFieldGenerator({@required this.words, this.size = 7}) {
+  GameFieldGeneratorInteractor({@required this.words, this.size = 7}) {
     gameField = GameField(size: size);
   }
 
@@ -26,8 +27,9 @@ class GameFieldGenerator {
       List<FieldCell> startPoints =
           gameField.getAvailableStartPoints(currentWord.first);
       startPoints.shuffle();
-      if (writeWord(currentWord, startPoints)) {
-        addedWords.add(w);
+      final writedWord = writeWord(currentWord, startPoints);
+      if (writedWord != null) {
+        addedWords.add(writedWord);
         successfully = true;
         return;
       }
@@ -35,28 +37,23 @@ class GameFieldGenerator {
     return successfully;
   }
 
-  bool writeWord(List<String> word, List<FieldCell> startPoints) {
-    bool successfully = false;
+  WordModel writeWord(List<String> word, List<FieldCell> startPoints) {
     final startPointsIterator = startPoints.iterator;
     while (startPointsIterator.moveNext()) {
       final startPoint = startPointsIterator.current;
-      if (tryWriteWord(word, startPoint)) {
-        successfully = true;
-        break;
-      }
+
+      final writedWord = tryWriteWord(word, startPoint);
+      if (writedWord != null) return writedWord;
     }
-    return successfully;
+    return null;
   }
 
-  bool tryWriteWord(List<String> word, FieldCell startPoint) {
-    bool successfully = false;
+  WordModel tryWriteWord(List<String> word, FieldCell startPoint) {
     final directions = generateRandomDirections();
     final directionsIterator = directions.iterator;
     while (directionsIterator.moveNext()) {
       bool writed = true;
       final backup = getBackup(gameField.field);
-//      List<List<String>> backup = [];
-//      backup.addAll(gameField.field)
       final direction = directionsIterator.current;
       x = startPoint.x;
       y = startPoint.y;
@@ -65,16 +62,18 @@ class GameFieldGenerator {
         final char = wordIterator.current;
         if (!gameField.writeChar(x, y, char)) {
           writed = false;
-        } else
-          moveToDirection(direction);
+        } else if (char != word.last) moveToDirection(direction);
       }
       if (writed) {
-        successfully = true;
-        break;
+        return WordModel(
+            word: getStringFromList(word),
+            startCell:
+                FieldCell(x: startPoint.x, y: startPoint.y, value: word.first),
+            endCell: FieldCell(x: x, y: y, value: word.last));
       } else
         gameField.field = backup;
     }
-    return successfully;
+    return null;
   }
 
   List<List<String>> getBackup(List<List<String>> object) {
